@@ -17,6 +17,9 @@ export interface Gifts {
 
 export interface RaffleItf {
     _id?: string | Types.ObjectId;
+    title: string;
+    description: string;
     employees: Employees[];
     gifts: Gifts[];
+    status?: boolean;
 }

@@ -4,6 +4,8 @@ import { RaffleItf } from "../interface/excel.itf";
 export const mongooseDB = require("mongoose");
 
 const schema: Schema = new Schema<RaffleItf>({
+  title: { type: String, required: true },
+  description: { type: String, required: true },
   employees: [
     {
       idEmployee: { type: Number },
@@ -19,6 +21,7 @@ const schema: Schema = new Schema<RaffleItf>({
       isAvailable: { type: Boolean, required: false, default: true },
     },
   ],
+  status: { type: Boolean, required: false, default: true },
 });
 
 const ModelRaffle = mongooseDB.model("ModelRaffle", schema);
