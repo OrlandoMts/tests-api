@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { succesUploadFile } from "../messages/messages";
+import { somethingWentWrong, succesUploadFile } from "../messages/messages";
 import { RaffleItf } from "../interface/excel.itf";
 
 const ModelRaffle = require("../model/raffle.mod");
@@ -26,20 +26,40 @@ export const playGame = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "Juego no encontrado" });
     }
     const gifts = raffle.gifts;
-    if (gifts.length > 0) {
-      const availableGift = gifts.find((gift: any) => gift.isAvailable);
-      gitfToShow = availableGift;
-      if (!availableGift) {
-        return res.json({ message: "Premios terminados" });
+    const employees = raffle.employees;
+
+    const availableEmployees = employees.filter(
+      (employee: any) => employee.canPlay
+    );
+
+    if (availableEmployees.length > 0) {
+      const randomEmployeeIndex = Math.floor(
+        Math.random() * availableEmployees.length
+      );
+      const randomEmployee = availableEmployees[randomEmployeeIndex];
+      randomEmployee.canPlay = false;
+
+      if (gifts.length > 0) {
+        const availableGift = gifts.find((gift: any) => gift.isAvailable);
+        gitfToShow = availableGift;
+
+        if (!availableGift) {
+          return res.json({ message: "Premios terminados" });
+        }
+        availableGift.isAvailable = false;
+        // Agrega el objeto de regalo a la propiedad "winners"
+        raffle.winners.push({
+          gift: availableGift,
+          winner: randomEmployee, // Aquí puedes establecer el objeto del ganador si es necesario
+        });
+        await raffle.save();
       }
-      availableGift.isAvailable = false;
-      await raffle.save();
+    } else {
+      return res.json({ message: "Juego terminado" });
     }
-    return res.json({ message: "Juego iniciado", gitfToShow });
+    return res.json({ message: "Juego iniciado", raffle });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Ha ocurrido un error, contacte al administrador" });
+    return res.status(500).json({ error: somethingWentWrong });
   }
 };
 
@@ -55,8 +75,6 @@ export const getGift = async (req: Request, res: Response) => {
 
     return res.json({ message: "Obteniendo el regalo", availableGift });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Ha ocurrido un error, contacte al administrador" });
+    return res.status(500).json({ error: somethingWentWrong });
   }
 };
