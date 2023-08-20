@@ -1,0 +1,4 @@
+1. Eliminar repetidos
+2. Buscar la forma de crear una para innovacion
+3. Crear un modelo aparte para guardar a los ganadores y hacer referencia a la rifa actual
+4. Crear un eps para obtener el regalo y otro para hacer la operacion y cambiarles el estado para que no esten disponibles

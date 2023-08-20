@@ -15,11 +15,17 @@ export interface Gifts {
     isAvailable: boolean;
 }
 
+export interface WinnerItf {
+    gift: Gifts;
+    winner: Employees;
+}
+
 export interface RaffleItf {
     _id?: string | Types.ObjectId;
     title: string;
     description: string;
     employees: Employees[];
     gifts: Gifts[];
+    winners?: WinnerItf[];
     status?: boolean;
 }

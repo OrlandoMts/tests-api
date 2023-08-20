@@ -7,14 +7,14 @@ const ModelUser = require("./model/user.mod");
 const ModelRaffle = require("./model/raffle.mod");
 
 import { Request, Response } from "express";
-import { startGame, uploadFile } from "./controller/excel.ctrl";
+import { startGame, getOneGift, uploadFile } from "./controller/excel.ctrl";
 import { check } from "express-validator";
 import { checkFieldsMidd, ckId } from "./middleware/check";
 require("./db/connection");
 
 app.use(bodyParser.json());
 
-// Ruta para cargar un archivo
+// Ruta para cargar un archivo excel a una bd
 app.post(
   "/upload",
   [
@@ -28,7 +28,7 @@ app.post(
   }
 );
 
-// Ruta para cargar un archivo
+// Ruta para jugar
 app.get(
   "/start/:_id",
   [
@@ -38,6 +38,18 @@ app.get(
   ],
   (req: Request, res: Response) => {
     startGame(req, res);
+  }
+);
+// Obtener un regalo disponible
+app.get(
+  "/start/gift/:_id",
+  [
+    check("_id", "No es un id valido").isMongoId(),
+    check("_id").custom((val) => ckId(val, ModelRaffle, "sorteo")),
+    checkFieldsMidd,
+  ],
+  (req: Request, res: Response) => {
+    getOneGift(req, res);
   }
 );
 

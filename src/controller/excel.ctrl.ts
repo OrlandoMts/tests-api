@@ -7,7 +7,7 @@ import {
   fileNameMissing,
   successDeleteFile,
 } from "../messages/messages";
-import { prepareToInsert } from "../resolver/excel.rsv";
+import { prepareToInsert, playGame, getGift } from "../resolver/excel.rsv";
 
 export const uploadFile = (req: Request, res: Response) => {
   if (!req.file) {
@@ -16,23 +16,23 @@ export const uploadFile = (req: Request, res: Response) => {
   const file = req.file.path;
   const splitname = req.file?.originalname.split(".");
   const extension = splitname[splitname.length - 1];
-  const { title, description, ...body} = req.body;
+  const { title, description, ...body } = req.body;
   if (extension !== "xlsx") {
     return res.status(400).json({ error: fileNameMissing("excel") });
   }
-  
+
   const objExcel = {
     title,
     description,
     employees: excelToJson(file, 0),
     gifts: excelToJson(file, 1),
-  }
+  };
 
   try {
     fs.unlink(file, (err) => {
       if (err) {
-        throw new Error(`${errorDeleteFile} ${err}`)
-      } 
+        throw new Error(`${errorDeleteFile} ${err}`);
+      }
       console.log(`${successDeleteFile} ${file}`);
     });
   } catch (error: any) {
@@ -43,8 +43,9 @@ export const uploadFile = (req: Request, res: Response) => {
 };
 
 export const startGame = (req: Request, res: Response) => {
-  res.status(200).json({
-    ok: true,
-    msg: "Juego iniciado"
-  })
-}
+  return playGame(req, res);
+};
+
+export const getOneGift = (req: Request, res: Response) => {
+  return getGift(req, res);
+};
